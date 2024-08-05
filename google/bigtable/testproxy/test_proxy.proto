@@ -249,6 +249,35 @@ message ReadModifyWriteRowRequest {
   google.bigtable.v2.ReadModifyWriteRowRequest request = 2;
 }
 
+message ExecuteQueryRequest {
+  // The ID of the target client object.
+  string client_id = 1;
+
+  google.bigtable.v2.ExecuteQueryRequest request = 2;
+}
+
+message ExecuteQueryResult {
+  // The RPC status from the client binding.
+  google.rpc.Status status = 1;
+
+  google.bigtable.v2.ResultSetMetadata result_set_metadata = 2;  // deprecated
+
+  // Name and type information for the query result.
+  ResultSetMetadata metadata = 4;
+
+  // Encoded version of the ResultSet. Should not contain type information.
+  repeated SqlRow rows = 3;
+}
+
+message ResultSetMetadata {
+  repeated google.bigtable.v2.ColumnMetadata columns = 1;
+}
+
+message SqlRow {
+  // Columnar values returned by the query.
+  repeated google.bigtable.v2.Value values = 1;
+}
+
 // Note that all RPCs are unary, even when the equivalent client binding call
 // may be streaming. This is an intentional simplification.
 //
@@ -311,4 +340,7 @@ service CloudBigtableV2TestProxy {
 
   // Performs a read-modify-write operation with the client.
   rpc ReadModifyWriteRow(ReadModifyWriteRowRequest) returns (RowResult) {}
+
+  // Executes a SQL query with the client.
+  rpc ExecuteQuery(ExecuteQueryRequest) returns (ExecuteQueryResult) {}
 }
